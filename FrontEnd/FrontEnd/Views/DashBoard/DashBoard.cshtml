@@ -1,0 +1,42 @@
+﻿@{
+    FrontEnd.Models.DashBoardPageModel result = Model;
+}
+
+<div class="app-title">
+    <div>
+        <h1><i class="fa fa-th-list"></i> ข้อมูลสมาชิก</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="tile">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ชื่อ</th>
+                        <th>นามสกุล</th>
+                        <th>Username </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var i = 1;
+                        foreach (var items in result.MemberList)
+                        {
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>@items.FirstName</td>
+                                            <td>@items.LastName</td>
+                                            <td>@items.Username</td>
+                                        </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

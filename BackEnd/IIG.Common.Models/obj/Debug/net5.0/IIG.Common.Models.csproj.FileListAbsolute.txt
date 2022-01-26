@@ -1,0 +1,12 @@
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.csproj.AssemblyReference.cache
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.AssemblyInfoInputs.cache
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.AssemblyInfo.cs
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.csproj.CoreCompileInputs.cache
+D:\Dev\IIG\BackEnd\IIG.Common.Models\bin\Debug\net5.0\IIG.Common.Models.deps.json
+D:\Dev\IIG\BackEnd\IIG.Common.Models\bin\Debug\net5.0\IIG.Common.Models.dll
+D:\Dev\IIG\BackEnd\IIG.Common.Models\bin\Debug\net5.0\ref\IIG.Common.Models.dll
+D:\Dev\IIG\BackEnd\IIG.Common.Models\bin\Debug\net5.0\IIG.Common.Models.pdb
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.dll
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\ref\IIG.Common.Models.dll
+D:\Dev\IIG\BackEnd\IIG.Common.Models\obj\Debug\net5.0\IIG.Common.Models.pdb

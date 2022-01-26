@@ -1,0 +1,222 @@
+﻿@{
+    FrontEnd.Models.MemberModel result = Model;
+    string ImageUrl = "";
+}
+
+<style>
+    .responsive {
+        max-width: 150px;
+        height: auto;
+    }
+</style>
+<div class="row user">
+    <div class="col-md-12">
+        <div class="col-md-8" id="user-settings">
+            <div class="tile user-settings">
+                <h4 class="line-head">Username : @result.Username</h4>
+                <form class="form-horizontal"  name="form">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group row">
+                                <div class="col-md-8">
+                                    @if (result.MemberImage != null)
+                                    {
+                                        ImageUrl = ViewBag.FileUrl + result.MemberImage.Path + "/" + result.MemberImage.Code + "." + result.MemberImage.FileType;
+                                    }
+                                    else
+                                    {
+
+                                        ImageUrl = "/Content/image/blank-profile-picture.png";
+                                    }
+                                    <img src="@ImageUrl" id="ImageMember" class="responsive">
+                                    <br>
+
+                                    <button class="btn btn-default" type="button" id="buttonImage" style="margin-top: 15px;">Choose Image</button>
+                                    <input class="input-file" id="ImageFile" name="ImageFile" type="file" accept="image/*" capture style="display: none">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label>ชื่อ</label>
+                            <input class="form-control" id="FirstName" name="FirstName" type="text" value="@result.FirstName">
+                        </div>
+                        <div class="col-md-4">
+                            <label>นามสกุล</label>
+                            <input class="form-control" type="text" id="LastName" name="LastName" value="@result.LastName">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="clearfix"></div>
+                        <div class="col-md-8 mb-4">
+                            <label>รหัสผ่าน</label>
+                            <input class="form-control" name="Password" id="Password" maxlength="12" type="password" pattern="[^a-zA-Z0-9_]" value="@result.Password">
+                            <div class="form-control-feedback" id="PasswordMessage" style="color:red" hidden>Password ตรงกลับข้อมูล 5ครั้งล่าสุด</div>
+
+                        </div>
+                    </div>
+                    <div class="row mb-10">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary" type="button" onclick="UpdateMemberData()"><i class="fa fa-fw fa-lg fa-check-circle"></i>Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/Helper.js"></script>
+<script type="text/javascript">
+    var _validFileExtensionsImage = [".jpg", ".jpeg", ".png"];
+    var Mamber = new Object;
+    var MemberImage;
+
+
+
+    document.forms["form"].addEventListener("input", function (e) {
+        var input = this.querySelector("input[name=Password]");
+        var not = input.value.match(/[^a-zA-Z0-9_]/g);
+        if (not) {
+            not.forEach(function (text) {
+                input.value = input.value.replace(text, "")
+                $.notify({
+                    title: "เเจ้งเตือน ",
+                    message: "สามารถระบุข้อมูลได้เเค่ a-z, A-Z, 0-9, _",
+                }, {
+                    type: "danger"
+                });
+                $("#Password").addClass("is-invalid");
+            })
+        } else {
+            $("#Password").removeClass("is-invalid");
+        }
+
+
+    })
+
+
+
+    $("#Password").keypress(function () {
+        if ($("#Password").val().length > 11) {
+            $.notify({
+                title: "เเจ้งเตือน ",
+                message: "สามารถระบุข้อมูล ได้สูงสุด12 ตัว",
+            }, {
+                type: "warning"
+            });
+        }
+    });
+
+    function UpdateMemberData() {
+        Mamber.Password = $("#Password").val();
+        Mamber.FirstName = $("#FirstName").val();
+        Mamber.LastName = $("#LastName").val();
+        Mamber.MemberImage = MemberImage;
+
+        if (Mamber.Password.length < 6) {
+            $.notify({
+                title: "เเจ้งเตือน ",
+                message: "ระบุข้อมูลรหัสผ่านอย่างน้อย 6ตัว",
+            }, {
+                type: "warning"
+            });
+        }
+
+         $.ajax({
+                url: "@Url.Action("UpdateMember", "Home")",
+                type: "POST",
+             data: Mamber ,
+                dataType: 'json',
+                async: false,
+             success: function (result) {
+                 console.log(result.code)
+                 if (result.code == 200 && result.passwordStatus== true) {
+                     swal("สำเร็จ", "การอัพเดตข้อมูลสมาชิกสำเร็จ !", "success");
+                     setTimeout(function () {
+                         window.location = "@Url.Action("DashBoard", "DashBoard")";
+
+                         }, 1000);
+                 } else if (result.code == 200 && result.passwordStatus== false) {
+                     $("#Password").addClass("is-invalid");
+                     $("#PasswordMessage").removeAttr('hidden');
+                 } else {
+                     swal("ไม่สำเร็จ", "การอัพเดตข้อมูลสมาชิกไม่สำเร็จ !", "warning");
+                 }
+                },error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+         });
+
+    }
+    document.getElementById('buttonImage').addEventListener('click', () => {
+        document.getElementById('ImageFile').click()
+    });
+
+    $(document).on('change', 'input[name="ImageFile"]', (e) => {
+            var files = e.target.files;
+            if (!files || files.length == 0) return;
+            var sFileName = e.target.value;
+            var blnValid = false;
+        for (var j = 0; j < _validFileExtensionsImage.length; j++) {
+                var sCurExtension = _validFileExtensionsImage[j];
+                if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                    blnValid = true;
+                    break;
+                }
+            }
+            if (!blnValid) {
+                    $.notify({
+                        title: "Can't Choose File ",
+                        message: "Choose " + _validFileExtensionsImage.join(", ") + " Only !",
+                        icon: 'fa fa-check'
+                    }, {
+                        type: "danger"
+                    });
+
+                return false;
+            }
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var fileContent = null;
+                convert.toBase64(file).then((v) => {
+                    fileContent = v;
+                    var type = file.name.split('.')[file.name.split('.').length - 1]
+
+                    var fileUpload = null;
+                    if (fileContent != null && fileContent != "") {
+                        fileUpload = new Object();
+                        fileUpload.Filename = null;
+                        fileUpload.OriginalName = file.name;
+                        fileUpload.Type = type;
+                        fileUpload.base64 = fileContent;
+                        document.getElementById('ImageMember')
+                            .setAttribute(
+                                'src', fileContent,
+                        );
+                        $('#ImageMember').removeAttr('hidden')
+                    }
+
+                    call('@Url.Action("SetUpload", "Home")', 'POST', fileUpload, function (res) {
+                        MemberImage = res;
+                        console.log(MemberImage)
+                        $('#content_ajaxloader').hide();
+
+                    });
+
+                });
+
+
+        }
+
+        $(e.target).val('');
+
+    });
+
+</script>

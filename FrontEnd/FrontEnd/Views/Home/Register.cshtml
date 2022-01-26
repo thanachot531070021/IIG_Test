@@ -1,0 +1,224 @@
+﻿@{
+    ViewBag.Title = "Register-Page";
+}
+
+<style>
+    .responsive {
+        max-width: 150px;
+        height: auto;
+    }
+    </style>
+<section class="material-half-bg">
+    <div class="cover"></div>
+</section>
+<section class="login-content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile" style="min-width:383px">
+                <h3 class="tile-title">Register</h3>
+                <div class="tile-body">
+                    <form class="form-horizontal" name="form">
+                        <div class="form-group row">
+                            <label class="control-label col-md-3">Username</label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="Username" name="Username" type="text" placeholder="Enter Username">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-3">Password</label>
+                            <div class="col-md-8">
+                                <input class="form-control" maxlength="12" id="Password" name="Password" type="Password" pattern="[^a-zA-Z0-9_]" placeholder="Enter Password">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-3">First Name</label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="FirstName" name="FirstName" type="text" placeholder="Enter First Name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-3">Last Name</label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="LastName" name="LastName" type="text" placeholder="Enter Last Name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-3">Image</label>
+                            <div class="col-md-8">
+                                <button class="btn btn-default" type="button" id="buttonImage">Choose Image</button>
+                                <br>
+                                <input class="input-file" id="ImageFile" name="ImageFile" type="file" accept="image/*" capture style="display: none">
+                                <img src="" id="ImageMember" class="responsive" style="margin-top: 15px;" hidden>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="tile-footer">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-3">
+                            <button class="btn btn-primary" type="button" onclick="Register()"><i class="fa fa-fw fa-lg fa-check-circle"></i>Register</button>
+                            &nbsp;&nbsp;&nbsp;<a class="btn btn-secondary" href="@Url.Action("Index", "Home")"><i class="fa fa-fw fa-lg fa-times-circle"></i>Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="~/Scripts/Helper.js"></script>
+<script type="text/javascript">
+    var _validFileExtensionsImage = [".jpg", ".jpeg", ".png"];
+    var Mamber = new Object;
+    var MemberImage;
+
+    document.forms["form"].addEventListener("input", function (e) {
+        var input = this.querySelector("input[name=Password]");
+        var not = input.value.match(/[^a-zA-Z0-9_]/g);
+        if (not) {
+            not.forEach(function (text) {
+                input.value = input.value.replace(text, "")
+                $.notify({
+                    title: "เเจ้งเตือน ",
+                    message: "สามารถระบุข้อมูลได้เเค่ a-z, A-Z, 0-9, _",
+                }, {
+                    type: "danger"
+                });
+                $("#Password").addClass("is-invalid");
+            })
+        } else {
+            $("#Password").removeClass("is-invalid");
+        }
+       
+
+    })
+
+
+
+    $("#Password").keypress(function () {
+        if ($("#Password").val().length > 11) {
+            $.notify({
+                title: "เเจ้งเตือน ",
+                message: "สามารถระบุข้อมูล ได้สูงสุด12 ตัว",
+            }, {
+                type: "warning"
+            });
+        }
+    });
+
+    document.getElementById('buttonImage').addEventListener('click', () => {
+        document.getElementById('ImageFile').click()
+    })
+
+
+    $(document).on('change', 'input[name="ImageFile"]', (e) => {
+            var files = e.target.files;
+            if (!files || files.length == 0) return;
+            var sFileName = e.target.value;
+            var blnValid = false;
+        for (var j = 0; j < _validFileExtensionsImage.length; j++) {
+                var sCurExtension = _validFileExtensionsImage[j];
+                if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                    blnValid = true;
+                    break;
+                }
+            }
+            if (!blnValid) {
+                    $.notify({
+                        title: "Can't Choose File ",
+                        message: "Choose " + _validFileExtensionsImage.join(", ") + " Only !",
+                        icon: 'fa fa-check'
+                    }, {
+                        type: "danger"
+                    });
+
+                return false;
+            }
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var fileContent = null;
+                convert.toBase64(file).then((v) => {
+                    fileContent = v;
+                    var type = file.name.split('.')[file.name.split('.').length - 1]
+
+                    var fileUpload = null;
+                    if (fileContent != null && fileContent != "") {
+                        fileUpload = new Object();
+                        fileUpload.Filename = null;
+                        fileUpload.OriginalName = file.name;
+                        fileUpload.Type = type;
+                        fileUpload.FileSize = file.size;
+                        fileUpload.base64 = fileContent;
+                        document.getElementById('ImageMember')
+                            .setAttribute(
+                                'src', fileContent,
+                        );
+                        $('#ImageMember').removeAttr('hidden')
+                    }
+
+                    call('@Url.Action("SetUpload", "Home")', 'POST', fileUpload, function (res) {
+                        MemberImage= res;
+                        $('#content_ajaxloader').hide();
+
+                    });
+
+                });
+
+
+        }
+
+        $(e.target).val('');
+
+    });
+
+
+
+    function Register() {
+        Mamber.Username = $("#Username").val();
+        Mamber.Password = $("#Password").val();
+        Mamber.FirstName = $("#FirstName").val();
+        Mamber.LastName = $("#LastName").val();
+        Mamber.MemberImage = MemberImage;
+
+        if (Mamber.Password.length < 6) {
+            $.notify({
+                title: "เเจ้งเตือน ",
+                message: "ระบุข้อมูลรหัสผ่านอย่างน้อย 6ตัว",
+            }, {
+                type: "warning"
+            });
+
+            return false
+        }
+
+
+
+         $.ajax({
+                url: "@Url.Action("SaveMember", "Home")",
+                type: "POST",
+             data: Mamber ,
+                dataType: 'json',
+                async: false,
+             success: function (result) {
+                 if (result.code == 200 && result.checkUserName==true) {
+                     swal("สำเร็จ", "บันทึกข้อมูลสมาชิกสำเร็จ!", "success");
+                     setTimeout(function () {
+                         window.location = "@Url.Action("Index", "Home")";
+                         }, 1300);
+                 } else if (result.code == 200 && result.checkUserName==false) {
+                     swal("เเจ้งเตือน", "Username นี้มีอยู่ในระบบอยู่แล้ว!", "warning");
+                 } else {
+                     swal("เเจ้งเตือน", "เพิ่มข้อมูลสมาชิกไม่สำเร็จ !", "warning");
+                 }
+                },error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+         });
+
+
+    }
+
+</script>

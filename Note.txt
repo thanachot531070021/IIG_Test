@@ -1,0 +1,3 @@
+ข้อมูล ที่เกี่ยวข้อง 26/01/2565
+Physical path File จะอยู่ที่ D:/IIG_PUBLIC_FILE/
+ส่วนของ iis จะกำหนด port server ที่ http://localhost:8080/
